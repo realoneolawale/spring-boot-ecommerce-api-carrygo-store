@@ -33,6 +33,8 @@ public class User {
     private String firstName;
     @Column(nullable = false)
     private String lastName;
+    @Column(nullable = false)
+    private String username;
     @Column(nullable = false, unique = true)
     private String email;
     @Column(nullable = false, unique = true)

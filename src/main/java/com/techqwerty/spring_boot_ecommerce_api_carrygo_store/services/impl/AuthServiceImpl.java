@@ -1,0 +1,86 @@
+package com.techqwerty.spring_boot_ecommerce_api_carrygo_store.services.impl;
+
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.LoginDto;
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.RegisterDto;
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.entities.Role;
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.entities.User;
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.exceptions.EcommerceAPIException;
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.repositories.RoleRepository;
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.repositories.UserRepository;
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.security.JwtTokenProvider;
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.services.AuthService;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Set;
+
+@Service
+public class AuthServiceImpl implements AuthService {
+
+    private AuthenticationManager authenticationManager;
+    private UserRepository userRepository;
+    private RoleRepository roleRepository;
+    private PasswordEncoder passwordEncoder;
+    private JwtTokenProvider jwtTokenProvider;
+
+    public AuthServiceImpl(AuthenticationManager authenticationManager,
+            UserRepository userRepository,
+            RoleRepository roleRepository,
+            PasswordEncoder passwordEncoder,
+            JwtTokenProvider jwtTokenProvider) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
+
+    @Override
+    public String login(LoginDto loginDto) {
+
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                loginDto.getUsernameOrEmail(), loginDto.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String token = jwtTokenProvider.generateToken(authentication);
+
+        return token;
+    }
+
+    @Override
+    public String register(RegisterDto registerDto) {
+
+        // add check for username exists in database
+        if (userRepository.existsByUsername(registerDto.getUsername())) {
+            throw new EcommerceAPIException(HttpStatus.BAD_REQUEST, "Username is already exists!.");
+        }
+
+        // add check for email exists in database
+        if (userRepository.existsByEmail(registerDto.getEmail())) {
+            throw new EcommerceAPIException(HttpStatus.BAD_REQUEST, "Email is already exists!.");
+        }
+
+        User user = new User();
+        user.setFirstName(registerDto.getFirstName());
+        user.setLastName(registerDto.getLastName());
+        user.setPhone(registerDto.getPhone());
+        user.setUsername(registerDto.getUsername());
+        user.setEmail(registerDto.getEmail());
+        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+        // set the new user created role to ROLE_USER
+        Set<Role> roles = new HashSet<>();
+        Role userRole = roleRepository.findByName("ROLE_USER").get();
+        roles.add(userRole);
+        user.setRoles(roles);
+        // save the new user and their role
+        userRepository.save(user);
+        return "User registered successfully!.";
+    }
+}
