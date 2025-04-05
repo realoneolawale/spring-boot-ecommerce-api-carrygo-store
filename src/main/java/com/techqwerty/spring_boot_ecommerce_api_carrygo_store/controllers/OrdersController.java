@@ -33,7 +33,7 @@ public class OrdersController {
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
     @GetMapping("getOrderDetailsByOrderId/{orderId}")
-    @PreAuthorize("hasRole('ADMIN', 'USER', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'MANAGER')")
     public ResponseEntity<List<OrderDetailsDto>> getOrderDetailsByOrderId(@PathVariable("orderId") Long orderId) {
         return new ResponseEntity<>(orderService.getOrderDetailsByOrderId(orderId), HttpStatus.OK);
     }
