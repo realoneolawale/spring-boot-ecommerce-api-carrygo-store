@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.CategoryDto;
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.CategoryGetDto;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.CategoryUpdateDto;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.services.CategoryService;
 
@@ -45,13 +46,13 @@ public class CategoriesController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryDto>> getAllCategories() {
+    public ResponseEntity<List<CategoryGetDto>> getAllCategories() {
         var savedCategories = categoryService.getAllCategories();
         return new ResponseEntity<>(savedCategories, HttpStatus.OK);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<CategoryDto> getCategoryById(@PathVariable("id") Long categoryId) {
+    public ResponseEntity<CategoryGetDto> getCategoryById(@PathVariable("id") int categoryId) {
         return new ResponseEntity<>(categoryService.getCategoryById(categoryId), HttpStatus.OK);
     }
 
@@ -73,7 +74,7 @@ public class CategoriesController {
     @SecurityRequirement(name = "Bear Authentication")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteCategory(@PathVariable("id") Long categoryId) throws Exception {
+    public ResponseEntity<String> deleteCategory(@PathVariable("id") int categoryId) throws Exception {
         categoryService.deleteCategory(categoryId);
         return new ResponseEntity<>("Category deleted successfully!", HttpStatus.OK);
     }

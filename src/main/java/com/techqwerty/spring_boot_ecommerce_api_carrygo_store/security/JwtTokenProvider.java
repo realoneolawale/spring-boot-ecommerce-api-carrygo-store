@@ -27,7 +27,7 @@ public class JwtTokenProvider {
     private long jwtExpirationDate;
 
     // generate JWT token
-    public String generateToken(Authentication authentication){
+    public String generateToken(Authentication authentication) {
 
         String username = authentication.getName();
 
@@ -45,12 +45,12 @@ public class JwtTokenProvider {
         return token;
     }
 
-    private Key key(){
+    private Key key() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 
     // get username from JWT token
-    public String getUsername(String token){
+    public String getUsername(String token) {
 
         return Jwts.parser()
                 .verifyWith((SecretKey) key())
@@ -61,22 +61,21 @@ public class JwtTokenProvider {
     }
 
     // validate JWT token
-    public boolean validateToken(String token){
-        try{
+    public boolean validateToken(String token) {
+        try {
             Jwts.parser()
                     .verifyWith((SecretKey) key())
                     .build()
                     .parse(token);
             return true;
-        }catch (MalformedJwtException malformedJwtException){
-            throw new EcommerceAPIException(HttpStatus.BAD_REQUEST, "Invalid JWT Token");
-        }catch (ExpiredJwtException expiredJwtException){
-            throw new EcommerceAPIException(HttpStatus.BAD_REQUEST, "Expired JWT token");
-        }catch (UnsupportedJwtException unsupportedJwtException){
-            throw new EcommerceAPIException(HttpStatus.BAD_REQUEST, "Unsupported JWT token");
-        }catch (IllegalArgumentException illegalArgumentException){
-            throw new EcommerceAPIException(HttpStatus.BAD_REQUEST, "Jwt claims string is null or empty");
+        } catch (MalformedJwtException malformedJwtException) {
+            throw new EcommerceAPIException("Invalid JWT Token", HttpStatus.BAD_REQUEST);
+        } catch (ExpiredJwtException expiredJwtException) {
+            throw new EcommerceAPIException("Expired JWT token", HttpStatus.BAD_REQUEST);
+        } catch (UnsupportedJwtException unsupportedJwtException) {
+            throw new EcommerceAPIException("Unsupported JWT token", HttpStatus.BAD_REQUEST);
+        } catch (IllegalArgumentException illegalArgumentException) {
+            throw new EcommerceAPIException("Jwt claims string is null or empty", HttpStatus.BAD_REQUEST);
         }
     }
 }
-

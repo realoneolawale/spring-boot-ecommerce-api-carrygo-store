@@ -5,11 +5,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.CategoryDto;
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.CategoryGetDto;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.CategoryUpdateDto;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.entities.Category;
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.exceptions.EcommerceAPIException;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.exceptions.NameAlreadyException;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.exceptions.ResourceNotFoundException;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.repositories.CategoryRepository;
@@ -39,17 +42,17 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryDto> getAllCategories() {
+    public List<CategoryGetDto> getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
-        return categories.stream().map((category) -> modelMapper.map(category, CategoryDto.class))
+        return categories.stream().map((category) -> modelMapper.map(category, CategoryGetDto.class))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public CategoryDto getCategoryById(Long categoryId) {
+    public CategoryGetDto getCategoryById(int categoryId) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(
-                () -> new ResourceNotFoundException("Category", "id", categoryId));
-        return modelMapper.map(category, CategoryDto.class);
+                () -> new EcommerceAPIException("Category not found", HttpStatus.NOT_FOUND));
+        return modelMapper.map(category, CategoryGetDto.class);
     }
 
     @Override
@@ -63,7 +66,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void deleteCategory(Long categoryId) throws Exception {
+    public void deleteCategory(int categoryId) throws Exception {
         Category existingCategory = categoryRepository.findById(categoryId).orElseThrow(
                 () -> new Exception("Category not found"));
         categoryRepository.deleteById(existingCategory.getId());

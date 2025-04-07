@@ -9,7 +9,7 @@ public class EcommerceAPIException extends RuntimeException {
     private HttpStatus status;
     private String message;
 
-    public EcommerceAPIException(HttpStatus status, String message) {
+    public EcommerceAPIException(String message, HttpStatus status) {
         super();
         this.status = status;
         this.message = message;

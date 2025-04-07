@@ -21,7 +21,7 @@ import lombok.Setter;
 public class ShoppingCartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
     private double price;
     private int qty;
     private double totalAmount;

@@ -59,12 +59,12 @@ public class AuthServiceImpl implements AuthService {
 
         // add check for username exists in database
         if (userRepository.existsByUsername(registerDto.getUsername())) {
-            throw new EcommerceAPIException(HttpStatus.BAD_REQUEST, "Username is already exists!.");
+            throw new EcommerceAPIException("Username is already exists!.", HttpStatus.BAD_REQUEST);
         }
 
         // add check for email exists in database
         if (userRepository.existsByEmail(registerDto.getEmail())) {
-            throw new EcommerceAPIException(HttpStatus.BAD_REQUEST, "Email is already exists!.");
+            throw new EcommerceAPIException("Email is already exists!.", HttpStatus.BAD_REQUEST);
         }
 
         User user = new User();
@@ -79,8 +79,9 @@ public class AuthServiceImpl implements AuthService {
         Role userRole = roleRepository.findByName("ROLE_USER").get();
         roles.add(userRole);
         user.setRoles(roles);
-        // save the new user and their role
+        // save the new user and the
         userRepository.save(user);
+
         return "User registered successfully!.";
     }
 }

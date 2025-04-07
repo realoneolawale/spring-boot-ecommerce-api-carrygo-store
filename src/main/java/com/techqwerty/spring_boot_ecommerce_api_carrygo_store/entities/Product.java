@@ -37,6 +37,8 @@ public class Product {
     private double price;
     @Column(nullable = false)
     private boolean isTrending;
+    @Column(nullable = false)
+    private boolean isBestSelling;
 
     // product has a list of orderDetails
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)

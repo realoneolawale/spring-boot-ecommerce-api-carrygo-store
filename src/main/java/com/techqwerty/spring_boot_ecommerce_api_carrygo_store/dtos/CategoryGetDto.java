@@ -1,7 +1,5 @@
 package com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,9 +9,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryUpdateDto {
-    @NotNull(message = "Category id is required")
+public class CategoryGetDto {
     private int id;
-    @NotEmpty(message = "Category name is required")
     private String name;
 }
