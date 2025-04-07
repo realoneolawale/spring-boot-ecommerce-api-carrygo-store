@@ -29,7 +29,7 @@ public class OrdersController {
     // inject the order service
     private OrderService orderService;
 
-    @Operation(summary = "Get order details REST API", description = "Get order details REST API is used to get order details from the database")
+    @Operation(summary = "Get order details REST API (ADMIN, USER, MANAGER)", description = "Get order details REST API is used to get order details from the database")
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
     @GetMapping("getOrderDetailsByOrderId/{orderId}")
@@ -38,7 +38,7 @@ public class OrdersController {
         return new ResponseEntity<>(orderService.getOrderDetailsByOrderId(orderId), HttpStatus.OK);
     }
 
-    @Operation(summary = "Get orders by user id REST API", description = "Get orders by user id REST API is used to get orders from the database")
+    @Operation(summary = "Get orders by user id REST API (USER ONLY)", description = "Get orders by user id REST API is used to get orders from the database")
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
     @GetMapping("getOrdersByUserId/{userId}")

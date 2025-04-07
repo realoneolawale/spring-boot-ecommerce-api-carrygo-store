@@ -33,7 +33,7 @@ public class ProductsController {
 
     @SecurityRequirement(name = "Bear Authentication")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Add product with metadata")
+    @Operation(summary = "Add product with metadata (ADMIN ONLY)")
     @PostMapping(value = "/add-product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProductAddDto> createProduct(
             @RequestParam MultipartFile file,

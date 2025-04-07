@@ -35,7 +35,7 @@ public class CategoriesController {
     // inject the CategoryService
     private CategoryService categoryService;
 
-    @Operation(summary = "Create Category REST API", description = "Create Category REST API is used to save category into database")
+    @Operation(summary = "Create Category REST API (ADMIN ONLY)", description = "Create Category REST API is used to save category into database")
     @ApiResponse(responseCode = "201", description = "Http Status 201 CREATED")
     @SecurityRequirement(name = "Bear Authentication")
     @PreAuthorize("hasRole('ADMIN')")
@@ -56,7 +56,7 @@ public class CategoriesController {
         return new ResponseEntity<>(categoryService.getCategoryById(categoryId), HttpStatus.OK);
     }
 
-    @Operation(summary = "Update Category REST API", description = "Update Category REST API is used to update category database")
+    @Operation(summary = "Update Category REST API (ADMIN ONLY)", description = "Update Category REST API is used to update category database")
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
     @PreAuthorize("hasRole('ADMIN')")
@@ -69,7 +69,7 @@ public class CategoriesController {
         return new ResponseEntity<>(updatedCategoryDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "Delete Category REST API", description = "Delete Category REST API is used to delete category in the database")
+    @Operation(summary = "Delete Category REST API (ADMIN ONLY)", description = "Delete Category REST API is used to delete category in the database")
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
     @PreAuthorize("hasRole('ADMIN')")
