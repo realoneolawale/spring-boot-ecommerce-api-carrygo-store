@@ -24,14 +24,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     private UserDetailsService userDetailsService;
 
-    // URL to skip authentication for 
+    // URL to skip authentication for
     private static final List<String> PUBLIC_URLS = List.of(
-        "/api/auth/login",
-        "/api/auth/register",
-        "/api/shopping/add-to-cart",
-        "/swagger-ui/",
-        "/v3/api-docs/"
-    );
+            "/api/auth/login",
+            "/api/auth/register",
+            "/api/shopping/add-to-cart",
+            "/api/shopping/update-cart/{productId}/{userId}/{action}",
+            "/swagger-ui/",
+            "/v3/api-docs/");
 
     public JWTAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService) {
         this.jwtTokenProvider = jwtTokenProvider;
@@ -42,8 +42,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
-        
-        // URL not to process authentication for 
+
+        // URL not to process authentication for
         String path = request.getRequestURI();
         if (PUBLIC_URLS.stream().anyMatch(path::startsWith)) {
             filterChain.doFilter(request, response);
@@ -83,36 +83,36 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
 }
 
-/* 
-@Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
-    private static final List<String> PUBLIC_URLS = List.of(
-            "/api/auth/login",
-            "/api/auth/register",
-            "/api/shopping/add-to-cart",
-            "/swagger-ui/",
-            "/v3/api-docs/"
-    );
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
-
-                
-                // Skip public paths
-                String path = request.getRequestURI();
-        if (PUBLIC_URLS.stream().anyMatch(path::startsWith)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        // 🔐 Your JWT extraction + validation logic here
-        // If invalid or missing -> throw exception -> triggers 401
-
-        filterChain.doFilter(request, response);
-    }
-}
-*/
+/*
+ * @Component
+ * public class JwtAuthenticationFilter extends OncePerRequestFilter {
+ * 
+ * private static final List<String> PUBLIC_URLS = List.of(
+ * "/api/auth/login",
+ * "/api/auth/register",
+ * "/api/shopping/add-to-cart",
+ * "/swagger-ui/",
+ * "/v3/api-docs/"
+ * );
+ * 
+ * @Override
+ * protected void doFilterInternal(HttpServletRequest request,
+ * HttpServletResponse response,
+ * FilterChain filterChain)
+ * throws ServletException, IOException {
+ * 
+ * 
+ * // Skip public paths
+ * String path = request.getRequestURI();
+ * if (PUBLIC_URLS.stream().anyMatch(path::startsWith)) {
+ * filterChain.doFilter(request, response);
+ * return;
+ * }
+ * 
+ * // 🔐 Your JWT extraction + validation logic here
+ * // If invalid or missing -> throw exception -> triggers 401
+ * 
+ * filterChain.doFilter(request, response);
+ * }
+ * }
+ */

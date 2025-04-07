@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.OrderDetailsDto;
@@ -45,7 +46,8 @@ public class ShoppingCartItemImpl implements ShoppingCartItemService {
                 shoppingCartItemAddDto.getUserId());
         if (item != null) { // item is already in cart
             item.setQty(item.getQty() + shoppingCartItemAddDto.getQty());
-            item.setTotalAmount(item.getTotalAmount() + shoppingCartItemAddDto.getTotalAmount());
+            item.setTotalAmount(item.getTotalAmount() + shoppingCartItemAddDto.getPrice()); // increase the totalAmount
+                                                                                            // by adding the price
             shoppingCartItemRepository.save(item);
             return "Item updated";
         } else { // add new item to shopping cart
@@ -56,11 +58,43 @@ public class ShoppingCartItemImpl implements ShoppingCartItemService {
             ShoppingCartItem newItem = new ShoppingCartItem();
             newItem.setPrice(shoppingCartItemAddDto.getPrice());
             newItem.setQty(shoppingCartItemAddDto.getQty());
-            newItem.setTotalAmount(shoppingCartItemAddDto.getTotalAmount());
+            newItem.setTotalAmount(shoppingCartItemAddDto.getPrice() * shoppingCartItemAddDto.getQty());
             newItem.setProduct(product);
             newItem.setUser(user);
             shoppingCartItemRepository.save(newItem);
             return "Item added to cart";
+        }
+    }
+
+    @Override
+    public String updateUserShoppingCartItem(Long productId, Long userId, String action) {
+        User user = userRepository.findById(userId)
+                .orElseThrow();
+        ShoppingCartItem item = shoppingCartItemRepository.findByProductIdAndUserId(
+                productId,
+                user.getId());
+
+        if (item != null) { // item is already in cart
+            if (action.toLowerCase().equals("increase")) {
+                item.setQty(item.getQty() + 1);
+            } else if (action.toLowerCase().equals("decrease")) {
+                if (item.getQty() > 1) {
+                    item.setQty(item.getQty() - 1);
+                } else {
+                    shoppingCartItemRepository.delete(item);
+                    return "Item deleted from cart";
+                }
+            } else if (action.toLowerCase().equals("delete")) {
+                shoppingCartItemRepository.delete(item);
+                return "Item removed from cart";
+            } else {
+                throw new EcommerceAPIException("Invalid request", HttpStatus.BAD_REQUEST);
+            }
+            item.setTotalAmount(item.getPrice() * item.getQty());
+            shoppingCartItemRepository.save(item);
+            return "Cart item updated";
+        } else {
+            return "Bad request. Item not found in cart";
         }
     }
 }

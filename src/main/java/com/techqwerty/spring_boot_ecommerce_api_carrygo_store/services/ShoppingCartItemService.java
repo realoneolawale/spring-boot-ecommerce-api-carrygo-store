@@ -8,4 +8,6 @@ public interface ShoppingCartItemService {
     List<ShoppingCartItemGetDto> getUserShoppingCartItems(Long userId);
 
     String addUserShoppingCartItem(ShoppingCartItemAddDto shoppingCartItemAddDto);
+
+    String updateUserShoppingCartItem(Long productId, Long userId, String action);
 }

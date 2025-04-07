@@ -52,6 +52,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/shopping/add-to-cart").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/shopping/update-cart/{productId}/{userId}/{action}").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll() // permit public access to swagger ui
                         .requestMatchers("/v3/api-docs/**").permitAll() // permit public access to JSON api
