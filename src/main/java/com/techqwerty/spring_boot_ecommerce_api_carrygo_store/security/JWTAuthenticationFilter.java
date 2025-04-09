@@ -30,6 +30,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             "/api/auth/register",
             "/api/shopping/add-to-cart",
             "/api/shopping/update-cart/{productId}/{userId}/{action}",
+            "/api/images/view/",
             "/swagger-ui/",
             "/v3/api-docs/");
 

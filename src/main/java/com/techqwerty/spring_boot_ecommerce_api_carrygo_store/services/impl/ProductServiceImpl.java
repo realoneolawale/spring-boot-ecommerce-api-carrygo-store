@@ -1,11 +1,14 @@
 package com.techqwerty.spring_boot_ecommerce_api_carrygo_store.services.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -22,8 +25,11 @@ import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.exceptions.NameAlr
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.repositories.CategoryRepository;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.repositories.ProductRepository;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.services.ProductService;
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.utils.RequestUtils;
+
 import io.jsonwebtoken.lang.Collections;
 import jakarta.annotation.Nullable;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 
@@ -34,7 +40,8 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
     private CategoryRepository categoryRepository;
     private ModelMapper modelMapper;
-    private final String UPLOAD_DIR = "products/";
+    private final String UPLOAD_DIR = System.getProperty("user.dir") + "/products/";
+    // private final String UPLOAD_DIR = "products/";
 
     @Override
     public ProductAddDto createProduct(ProductAddDto productAddDto) throws IOException {
@@ -59,11 +66,24 @@ public class ProductServiceImpl implements ProductService {
         // upload the product image
         MultipartFile file = productAddDto.getFile(); // file.getFile();
         // save the file
-        Path path = Paths.get(UPLOAD_DIR, file.getOriginalFilename());
-        Files.createDirectories(path.getParent());
-        Files.write(path, file.getBytes());
+        // Create upload dir if it doesn't exist
+        File uploadDir = new File(UPLOAD_DIR);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
+        // Save the file
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path filePath = Paths.get(UPLOAD_DIR, fileName);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        // Build image URL
+        HttpServletRequest request = RequestUtils.getRequest();
+        String imageUrl = request.getScheme() + "://" +
+                request.getServerName() + ":" +
+                request.getServerPort() +
+                "/api/products/view/" + fileName;
         // set the image url to the uploaded file
-        product.setImageUrl("/products/" + file.getOriginalFilename());
+        product.setImageUrl(imageUrl);
         // save product in the DB
         try {
             Product savedProduct = productRepository.save(product);

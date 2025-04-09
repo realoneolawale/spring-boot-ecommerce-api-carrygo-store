@@ -1,7 +1,12 @@
 package com.techqwerty.spring_boot_ecommerce_api_carrygo_store.controllers;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +35,7 @@ import lombok.AllArgsConstructor;
 public class ProductsController {
 
     private ProductService productService;
+    private final String UPLOAD_DIR = System.getProperty("user.dir") + "/products/";
 
     @SecurityRequirement(name = "Bear Authentication")
     @PreAuthorize("hasRole('ADMIN')")
@@ -47,11 +53,34 @@ public class ProductsController {
         return new ResponseEntity<>(dtoToReturn, HttpStatus.CREATED);
     }
 
+    // Endpoint to serve the uploaded image
+    // http://localhost:8081/api/products/view/abc123_sample.jpg
+    @GetMapping("/view/{fileName:.+}")
+    public ResponseEntity<Resource> getImage(@PathVariable String fileName) throws IOException {
+        Path filePath = Paths.get(UPLOAD_DIR, fileName);
+        if (!Files.exists(filePath)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // get the contentType of the file 
+        String contentType = Files.probeContentType(filePath);
+        if (contentType == null) {
+            contentType = "application/octet-stream"; // fallback
+        }
+
+        Resource resource = new UrlResource(filePath.toUri());
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType)) // or use probeContentType
+                //.contentType(MediaType.IMAGE_JPEG) // or use probeContentType
+                .body(resource);
+    }
+
     @GetMapping("{productId}")
     public ResponseEntity<ProductGetDto> getProduct(@PathVariable Long productId) {
         ProductGetDto product = productService.getProduct(productId);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
+
     // GET: http://localhost:8081/api/products
     // GET: http://localhost:8081/api/products/bestselling/0
     @GetMapping({ "", "/{productType}/{categoryId}" })
