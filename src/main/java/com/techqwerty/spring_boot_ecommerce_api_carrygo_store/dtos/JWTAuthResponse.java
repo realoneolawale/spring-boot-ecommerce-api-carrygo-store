@@ -12,5 +12,8 @@ import lombok.Setter;
 public class JWTAuthResponse {
     private String accessToken;
     private String tokenType = "Bearer";
+    private Long id;
+    private String firstName;
+    private String email;
+    private String username;
 }
-

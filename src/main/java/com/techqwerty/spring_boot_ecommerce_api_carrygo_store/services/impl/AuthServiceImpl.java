@@ -1,5 +1,6 @@
 package com.techqwerty.spring_boot_ecommerce_api_carrygo_store.services.impl;
 
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.JWTAuthResponse;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.LoginDto;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.RegisterDto;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.entities.Role;
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,16 +44,21 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String login(LoginDto loginDto) {
+    public JWTAuthResponse login(LoginDto loginDto) {
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginDto.getUsernameOrEmail(), loginDto.getPassword()));
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         String token = jwtTokenProvider.generateToken(authentication);
-
-        return token;
+        JWTAuthResponse jwtAuthResponse = new JWTAuthResponse();
+        jwtAuthResponse.setAccessToken(token);
+        User user = userRepository.findByUsernameOrEmail(loginDto.getUsernameOrEmail(), loginDto.getUsernameOrEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        jwtAuthResponse.setId(user.getId());
+        jwtAuthResponse.setUsername(user.getUsername());
+        jwtAuthResponse.setEmail(user.getEmail());
+        jwtAuthResponse.setFirstName(user.getFirstName());
+        return jwtAuthResponse;
     }
 
     @Override
