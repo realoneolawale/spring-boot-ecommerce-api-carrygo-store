@@ -78,10 +78,11 @@ public class ProductServiceImpl implements ProductService {
 
         // Build image URL
         HttpServletRequest request = RequestUtils.getRequest();
-        String imageUrl = request.getScheme() + "://" +
-                request.getServerName() + ":" +
-                request.getServerPort() +
-                "/api/products/view/" + fileName;
+        // String imageUrl = request.getScheme() + "://" +
+        // request.getServerName() + ":" +
+        // request.getServerPort() +
+        // "/api/products/view/" + fileName;
+        String imageUrl = "api/products/view/" + fileName;
         // set the image url to the uploaded file
         product.setImageUrl(imageUrl);
         // save product in the DB

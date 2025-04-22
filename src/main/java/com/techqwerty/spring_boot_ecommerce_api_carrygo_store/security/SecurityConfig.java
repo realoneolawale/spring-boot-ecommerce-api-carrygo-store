@@ -15,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableMethodSecurity
@@ -53,7 +55,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/shopping/add-to-cart").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/images/view/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/shopping/update-cart/{productId}/{userId}/{action}").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/shopping/update-cart/{productId}/{userId}/{action}")
+                        .permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll() // permit public access to swagger ui
                         .requestMatchers("/v3/api-docs/**").permitAll() // permit public access to JSON api
@@ -67,6 +70,21 @@ public class SecurityConfig {
         http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    /*
+     * Cors policy: to allow streaming of products images
+     */
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/products/**")
+                        .allowedOrigins("*") // or your Flutter app origin
+                        .allowedMethods("GET");
+            }
+        };
     }
 
 }
