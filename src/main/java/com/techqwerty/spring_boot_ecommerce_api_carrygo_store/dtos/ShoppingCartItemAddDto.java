@@ -1,7 +1,9 @@
 package com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,4 +23,6 @@ public class ShoppingCartItemAddDto {
     private Long productId;
     @Positive(message = "User is not selected")
     private Long userId;
+    @Nullable
+    private Long sizeId;
 }

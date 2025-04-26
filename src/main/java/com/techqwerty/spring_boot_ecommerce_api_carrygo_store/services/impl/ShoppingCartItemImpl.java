@@ -12,10 +12,12 @@ import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.OrderDetailsD
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.ShoppingCartItemAddDto;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.ShoppingCartItemGetDto;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.entities.Product;
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.entities.ProductSize;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.entities.ShoppingCartItem;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.entities.User;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.exceptions.EcommerceAPIException;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.repositories.ProductRepository;
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.repositories.ProductSizeRepository;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.repositories.ShoppingCartItemRepository;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.repositories.UserRepository;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.services.ShoppingCartItemService;
@@ -29,6 +31,7 @@ public class ShoppingCartItemImpl implements ShoppingCartItemService {
 
     private ShoppingCartItemRepository shoppingCartItemRepository;
     private ProductRepository productRepository;
+    private ProductSizeRepository productSizeRepository;
     private UserRepository userRepository;
 
     @Override
@@ -53,6 +56,9 @@ public class ShoppingCartItemImpl implements ShoppingCartItemService {
         } else { // add new item to shopping cart
             Product product = productRepository.findById(shoppingCartItemAddDto.getProductId())
                     .orElseThrow();
+            ProductSize productSize = productSizeRepository.findById(shoppingCartItemAddDto.getSizeId())
+                    .orElseThrow();
+            
             User user = userRepository.findById(shoppingCartItemAddDto.getUserId())
                     .orElseThrow();
             ShoppingCartItem newItem = new ShoppingCartItem();
@@ -61,9 +67,19 @@ public class ShoppingCartItemImpl implements ShoppingCartItemService {
             newItem.setTotalAmount(shoppingCartItemAddDto.getPrice() * shoppingCartItemAddDto.getQty());
             newItem.setProduct(product);
             newItem.setUser(user);
+            newItem.setProductSize(productSize);
             shoppingCartItemRepository.save(newItem);
             return "Item added to cart";
         }
+    }
+    @Override
+    public String deleteUserShoppingCartItem(Long productId, Long userId) {
+        ShoppingCartItem item = shoppingCartItemRepository.findByProductIdAndUserId(productId, userId);
+        if (item != null) { // item is already in cart                                                                        // by adding the price
+            shoppingCartItemRepository.delete(item);
+            return "Item deleted";
+        }
+        throw new EcommerceAPIException("Item not found", HttpStatus.BAD_REQUEST);
     }
 
     @Override

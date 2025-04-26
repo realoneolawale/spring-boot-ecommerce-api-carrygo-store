@@ -54,6 +54,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/shopping/add-to-cart").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/products/**").permitAll() // FOR TESTING
                         .requestMatchers(HttpMethod.GET, "/api/images/view/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/shopping/update-cart/{productId}/{userId}/{action}")
                         .permitAll()

@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,8 +19,10 @@ import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.CategoryGetDt
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.OrderDetailsDto;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.ProductAddDto;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.ProductGetDto;
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos.ProductSizeDto;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.entities.Category;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.entities.Product;
+import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.entities.ProductSize;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.exceptions.EcommerceAPIException;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.exceptions.NameAlreadyException;
 import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.repositories.CategoryRepository;
@@ -85,6 +88,18 @@ public class ProductServiceImpl implements ProductService {
         String imageUrl = "api/products/view/" + fileName;
         // set the image url to the uploaded file
         product.setImageUrl(imageUrl);
+        // add the product sizes and inventory
+        if (productAddDto.getSizes().size() > 0) {
+            List<ProductSize> productSizes = new ArrayList<>();
+            for (ProductSizeDto size : productAddDto.getSizes()) {
+                var productSize = new ProductSize();
+                productSize.setProduct(product);
+                productSize.setSize(size.getSize());
+                productSize.setStock(size.getStock());
+                productSizes.add(productSize);
+            }
+            product.setSizes(productSizes);
+        }
         // save product in the DB
         try {
             Product savedProduct = productRepository.save(product);

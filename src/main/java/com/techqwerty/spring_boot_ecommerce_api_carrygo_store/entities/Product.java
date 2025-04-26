@@ -1,6 +1,10 @@
 package com.techqwerty.spring_boot_ecommerce_api_carrygo_store.entities;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -49,8 +53,12 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    // product has a list of shoppingCartItems
+    // product can be in one or more shoppingCartItems
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private Set<ShoppingCartItem> shoppingCartItems;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<ProductSize> sizes = new ArrayList<>();
 
 }

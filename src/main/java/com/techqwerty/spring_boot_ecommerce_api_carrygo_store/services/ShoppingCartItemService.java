@@ -9,5 +9,7 @@ public interface ShoppingCartItemService {
 
     String addUserShoppingCartItem(ShoppingCartItemAddDto shoppingCartItemAddDto);
 
+    String deleteUserShoppingCartItem(Long productId, Long userId);
+
     String updateUserShoppingCartItem(Long productId, Long userId, String action);
 }

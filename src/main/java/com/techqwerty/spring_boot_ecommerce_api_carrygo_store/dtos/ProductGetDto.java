@@ -1,5 +1,8 @@
 package com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,4 +21,5 @@ public class ProductGetDto {
     private boolean isTrending;
     private boolean isBestSelling;
     private int categoryId;
+    private List<ProductSizeDto> sizes = new ArrayList<>();
 }

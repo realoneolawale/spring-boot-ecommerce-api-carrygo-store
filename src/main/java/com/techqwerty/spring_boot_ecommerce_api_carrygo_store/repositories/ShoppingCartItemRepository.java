@@ -9,7 +9,7 @@ import com.techqwerty.spring_boot_ecommerce_api_carrygo_store.entities.ShoppingC
 
 public interface ShoppingCartItemRepository extends JpaRepository<ShoppingCartItem, Integer> {
 
-    @Query(value = "SELECT sci.id, sci.price, sci.total_amount AS totalAmount, sci.qty, p.id AS productId, p.name AS productName, p.image_url AS imageUrl FROM shopping_cart_items sci INNER JOIN products p ON sci.product_id = p.id WHERE sci.user_id = :userId;", nativeQuery = true)
+    @Query(value = "SELECT sci.id, sci.price, sci.total_amount AS totalAmount, sci.qty, p.id AS productId, p.name AS productName, p.image_url AS imageUrl, ps.size FROM shopping_cart_items sci INNER JOIN products p ON sci.product_id = p.id LEFT JOIN product_sizes ps ON sci.size_id = ps.id WHERE sci.user_id = :userId;", nativeQuery = true)
     List<ShoppingCartItemGetDto> getUserShoppingCartItems(@Param("userId") Long userId);
 
     // Using JPQL

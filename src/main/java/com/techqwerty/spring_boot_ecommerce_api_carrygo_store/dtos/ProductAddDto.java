@@ -1,10 +1,10 @@
 package com.techqwerty.spring_boot_ecommerce_api_carrygo_store.dtos;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,14 +22,15 @@ public class ProductAddDto {
     @NotNull(message = "Product detail is required")
     @Length(max = 1000, message = "Product detail cannot be more than 1000 characters")
     private String details;
-
     // @Transient // will not be saved in DB
     @JsonIgnore // will not appear in JSON
     @NotNull(message = "Product image is required")
     private MultipartFile file;
+    // ProductCategoryEnum category
     private String imageUrl; // will store the file URL
     @NotNull(message = "Product price is required")
     private double price;
     @NotNull(message = "Product price is required")
     private int categoryId;
+    private List<ProductSizeDto> sizes = new ArrayList<>();
 }
